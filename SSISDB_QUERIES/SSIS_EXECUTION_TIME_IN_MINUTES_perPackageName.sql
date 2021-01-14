@@ -1,7 +1,7 @@
 USE SSISDB
 GO
 
-DECLARE @PackageName NVARCHAR(256) = 'PackageName.dtsx'
+DECLARE @PackageName NVARCHAR(256) = 'PackageName.dtsx'  --replace the package name
 DECLARE @DateSince DATE = GETDATE() - 30
 
 SELECT

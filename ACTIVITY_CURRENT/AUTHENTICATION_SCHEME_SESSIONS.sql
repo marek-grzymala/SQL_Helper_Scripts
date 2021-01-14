@@ -13,17 +13,18 @@ SELECT
 
 FROM sys.dm_exec_connections AS c
 INNER JOIN sys.dm_exec_sessions s ON s.session_id = c.session_id
---WHERE c.auth_scheme IN ('KERBEROS', 'NTLM') -- c.client_net_address = '10.135.131.194' --
-WHERE 
-            s.host_name <> @MachineName --  we do not care about the locally logged in sessions
-AND         s.host_name NOT LIKE 'WH%'
+WHERE       1 = 1 
+AND         c.auth_scheme IN ('KERBEROS', 'NTLM') 
+AND         s.host_name <> @MachineName --  we do not care about the locally logged in sessions
+--AND         s.login_name NOT IN ( 'DOMAIN\user' )
 
 SELECT 
-	c.auth_scheme AS [AuthenticationScheme]
-	,COUNT(c.auth_scheme) AS [SessionCount]
-FROM sys.dm_exec_connections AS c
-INNER JOIN sys.dm_exec_sessions s ON s.session_id = c.session_id
-WHERE 
-            s.host_name <> @MachineName --  we do not care about the locally logged in sessions
-AND         s.host_name NOT LIKE 'WH%'
-GROUP BY c.auth_scheme
+	        c.auth_scheme AS [AuthenticationScheme]
+	        ,COUNT(c.auth_scheme) AS [SessionCount]
+FROM        sys.dm_exec_connections AS c
+INNER JOIN  sys.dm_exec_sessions s ON s.session_id = c.session_id
+WHERE       1 = 1 
+AND         c.auth_scheme IN ('KERBEROS', 'NTLM') 
+AND         s.host_name <> @MachineName --  we do not care about the locally logged in sessions
+--AND         s.login_name NOT IN ( 'DOMAIN\user' )
+GROUP BY    c.auth_scheme
