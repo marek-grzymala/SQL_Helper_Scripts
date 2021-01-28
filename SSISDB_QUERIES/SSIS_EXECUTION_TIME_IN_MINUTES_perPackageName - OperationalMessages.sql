@@ -9,8 +9,9 @@ SELECT DISTINCT
 
       CAST(O.start_time AS DATETIME2(0)) AS [StartTime]
       , CAST(O.end_time AS DATETIME2(0)) AS [EndTime]
-      --, EX.Project_name                AS [ProjectName]
-      --, EM.Package_Name
+      , EX.Project_name                AS [ProjectName]
+      , EX.Package_Name
+      , EX.executed_as_name
       , O.Operation_Id
       , OM.operation_message_id
       , DATEDIFF(MINUTE, LAG(OM.message_time) OVER (ORDER BY OM.message_time), OM.message_time) AS [DurationMinutes] 
