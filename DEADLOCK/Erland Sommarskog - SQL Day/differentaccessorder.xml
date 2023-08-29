@@ -1,0 +1,48 @@
+﻿<deadlock>
+  <victim-list>
+    <victimProcess id="process26eab72e4e8" />
+  </victim-list>
+  <process-list>
+    <process id="process26eab72e4e8" taskpriority="0" logused="0" waitresource="KEY: 6:72057594047758336 (3b86dcc184bf)" waittime="4845" ownerId="4424715" transactionname="SELECT" lasttranstarted="2022-01-30T21:01:10.733" XDES="0x26ead3f9be8" lockMode="S" schedulerid="1" kpid="7144" status="suspended" spid="64" sbid="0" ecid="0" priority="0" trancount="0" lastbatchstarted="2022-01-30T21:01:10.733" lastbatchcompleted="2022-01-30T21:01:10.730" lastattention="1900-01-01T00:00:00.730" clientapp="slask.pl" hostname="SOMMERWALD" hostpid="2204" loginname="PRESENT10\sommar" isolationlevel="read committed (2)" xactid="4424715" currentdb="6" currentdbname="Northgale" lockTimeout="4294967295" clientoption1="671088672" clientoption2="128056">
+      <executionStack>
+        <frame procname="adhoc" line="1" stmtstart="24" stmtend="136" sqlhandle="0x02000000c3265a07c84b899aa4ef3244d2501e127ab283f50000000000000000000000000000000000000000">
+unknown    </frame>
+        <frame procname="unknown" line="1" sqlhandle="0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000">
+unknown    </frame>
+      </executionStack>
+      <inputbuf>
+(@empid int)SELECT SUM(Freight) FROM Orders WHERE EmployeeID = @empid   </inputbuf>
+    </process>
+    <process id="process26eabfb68c8" taskpriority="0" logused="244" waitresource="KEY: 6:72057594048675840 (503b20aac329)" waittime="4845" ownerId="4424716" transactionname="UPDATE" lasttranstarted="2022-01-30T21:01:10.733" XDES="0x26eb218c428" lockMode="X" schedulerid="3" kpid="11568" status="suspended" spid="60" sbid="0" ecid="0" priority="0" trancount="2" lastbatchstarted="2022-01-30T21:01:10.733" lastbatchcompleted="2022-01-30T21:01:10.733" lastattention="1900-01-01T00:00:00.733" clientapp="slask.pl" hostname="SOMMERWALD" hostpid="2204" loginname="PRESENT10\sommar" isolationlevel="read committed (2)" xactid="4424716" currentdb="6" currentdbname="Northgale" lockTimeout="4294967295" clientoption1="671088672" clientoption2="128056">
+      <executionStack>
+        <frame procname="adhoc" line="1" stmtstart="58" stmtend="202" sqlhandle="0x02000000535379128ef4e8a690a25bc475c9dc9fac39bedd0000000000000000000000000000000000000000">
+unknown    </frame>
+        <frame procname="unknown" line="1" sqlhandle="0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000">
+unknown    </frame>
+      </executionStack>
+      <inputbuf>
+(@newempid int, @orderid int)UPDATE dbo.Orders
+SET    EmployeeID = @newempid
+WHERE  OrderID = @orderid
+   </inputbuf>
+    </process>
+  </process-list>
+  <resource-list>
+    <keylock hobtid="72057594047758336" dbid="6" objectname="Northgale.dbo.Orders" indexname="PK_Orders" id="lock2709eb35780" mode="X" associatedObjectId="72057594047758336">
+      <owner-list>
+        <owner id="process26eabfb68c8" mode="X" />
+      </owner-list>
+      <waiter-list>
+        <waiter id="process26eab72e4e8" mode="S" requestType="wait" />
+      </waiter-list>
+    </keylock>
+    <keylock hobtid="72057594048675840" dbid="6" objectname="Northgale.dbo.Orders" indexname="empid_ix" id="lock26e8b168280" mode="S" associatedObjectId="72057594048675840">
+      <owner-list>
+        <owner id="process26eab72e4e8" mode="S" />
+      </owner-list>
+      <waiter-list>
+        <waiter id="process26eabfb68c8" mode="X" requestType="wait" />
+      </waiter-list>
+    </keylock>
+  </resource-list>
+</deadlock>

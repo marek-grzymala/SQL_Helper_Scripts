@@ -1,0 +1,6 @@
+docker pull mcr.microsoft.com/mssql/server:2019-latest
+
+/host_mnt/c/DOCKER_SHARE /tmp
+
+docker run -d -v my-named-volume:C:\MyNamedVolume testimage:latest
+docker run -d -v /host_mnt/c/DOCKER_SHARE:/tmp sql_server_2019:init

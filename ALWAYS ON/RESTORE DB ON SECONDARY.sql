@@ -1,0 +1,8 @@
+USE [master]
+RESTORE DATABASE [AdventureWorks2014] FROM  DISK = N'F:\BACKUPS\AdventureWorks2014\AdventureWorks2014.bak' WITH  FILE = 1,  NORECOVERY,  NOUNLOAD,  REPLACE,  STATS = 1
+GO
+
+RESTORE LOG [AdventureWorks2014] FROM  DISK = N'F:\BACKUPS\AdventureWorks2014\AdventureWorks2014.trn' WITH  FILE = 1,  NORECOVERY,  NOUNLOAD,  STATS = 1
+GO
+
+

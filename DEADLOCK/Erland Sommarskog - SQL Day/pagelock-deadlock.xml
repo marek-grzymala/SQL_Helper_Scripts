@@ -1,0 +1,102 @@
+﻿<deadlock>
+  <victim-list>
+    <victimProcess id="process26eabfb6108" />
+  </victim-list>
+  <process-list>
+    <process id="process26eabfb6108" taskpriority="0" logused="0" waitresource="PAGE: 9:1:2539485 " waittime="13479" ownerId="4398044" transactionname="SELECT" lasttranstarted="2022-01-30T19:22:30.070" XDES="0x26ea2b8daa0" lockMode="S" schedulerid="3" kpid="7788" status="suspended" spid="60" sbid="0" ecid="1" priority="0" trancount="0" lastbatchstarted="2022-01-30T19:22:30.070" lastbatchcompleted="2022-01-30T19:22:30.067" lastattention="1900-01-01T00:00:00.067" clientapp="slask.pl" hostname="SOMMERWALD" hostpid="9708" isolationlevel="read committed (2)" xactid="4398044" currentdb="9" currentdbname="BigDB" lockTimeout="4294967295" clientoption1="671088672" clientoption2="128056">
+      <executionStack>
+        <frame procname="adhoc" line="1" stmtstart="24" stmtend="140" sqlhandle="0x020000003c4b271a147dcb2d48d42943d16ec6d78395b2bb0000000000000000000000000000000000000000">
+unknown    </frame>
+        <frame procname="unknown" line="1" sqlhandle="0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000">
+unknown    </frame>
+      </executionStack>
+      <inputbuf>
+(@date date)SELECT SUM(Freight) FROM TallOrders WHERE OrderDate = @date   </inputbuf>
+    </process>
+    <process id="process26ea23a5468" taskpriority="0" logused="440" waitresource="PAGE: 9:1:2547120 " waittime="13542" ownerId="4398067" transactionname="UPDATE" lasttranstarted="2022-01-30T19:22:30.200" XDES="0x26eb21f4428" lockMode="IX" schedulerid="3" kpid="6636" status="suspended" spid="62" sbid="0" ecid="0" priority="0" trancount="2" lastbatchstarted="2022-01-30T19:22:30.200" lastbatchcompleted="2022-01-30T19:22:30.197" lastattention="1900-01-01T00:00:00.197" clientapp="slask.pl" hostname="SOMMERWALD" hostpid="9708" loginname="PRESENT10\sommar" isolationlevel="read committed (2)" xactid="4398067" currentdb="9" currentdbname="BigDB" lockTimeout="4294967295" clientoption1="671088672" clientoption2="128056">
+      <executionStack>
+        <frame procname="adhoc" line="1" stmtstart="60" stmtend="208" sqlhandle="0x020000007c0d5531e7727c5ed948bf7cafc52ea18301beb70000000000000000000000000000000000000000">
+unknown    </frame>
+        <frame procname="unknown" line="1" sqlhandle="0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000">
+unknown    </frame>
+      </executionStack>
+      <inputbuf>
+(@newshipid int, @orderid int)UPDATE dbo.TallOrders
+SET    ShipVia = @newshipid
+WHERE  OrderID = @orderid
+   </inputbuf>
+    </process>
+    <process id="process26ea060f468" taskpriority="0" logused="10000" waittime="12782" schedulerid="2" kpid="4552" status="suspended" spid="60" sbid="0" ecid="3" priority="0" trancount="0" lastbatchstarted="2022-01-30T19:22:30.070" lastbatchcompleted="2022-01-30T19:22:30.067" lastattention="1900-01-01T00:00:00.067" clientapp="slask.pl" hostname="SOMMERWALD" hostpid="9708" isolationlevel="read committed (2)" xactid="4398044" currentdb="9" currentdbname="BigDB" lockTimeout="4294967295" clientoption1="671088672" clientoption2="128056">
+      <executionStack>
+        <frame procname="adhoc" line="1" stmtstart="24" stmtend="140" sqlhandle="0x020000003c4b271a147dcb2d48d42943d16ec6d78395b2bb0000000000000000000000000000000000000000">
+unknown    </frame>
+        <frame procname="unknown" line="1" sqlhandle="0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000">
+unknown    </frame>
+      </executionStack>
+      <inputbuf>
+(@date date)SELECT SUM(Freight) FROM TallOrders WHERE OrderDate = @date   </inputbuf>
+    </process>
+    <process id="process26ea137bc28" taskpriority="0" logused="10000" waittime="4507" schedulerid="1" kpid="2196" status="suspended" spid="60" sbid="0" ecid="4" priority="0" trancount="0" lastbatchstarted="2022-01-30T19:22:30.070" lastbatchcompleted="2022-01-30T19:22:30.067" lastattention="1900-01-01T00:00:00.067" clientapp="slask.pl" hostname="SOMMERWALD" hostpid="9708" isolationlevel="read committed (2)" xactid="4398044" currentdb="9" currentdbname="BigDB" lockTimeout="4294967295" clientoption1="671088672" clientoption2="128056">
+      <executionStack>
+        <frame procname="adhoc" line="1" stmtstart="24" stmtend="140" sqlhandle="0x020000003c4b271a147dcb2d48d42943d16ec6d78395b2bb0000000000000000000000000000000000000000">
+unknown    </frame>
+        <frame procname="unknown" line="1" sqlhandle="0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000">
+unknown    </frame>
+      </executionStack>
+      <inputbuf>
+(@date date)SELECT SUM(Freight) FROM TallOrders WHERE OrderDate = @date   </inputbuf>
+    </process>
+    <process id="process26ea137aca8" taskpriority="0" logused="10000" waittime="13673" schedulerid="1" kpid="1068" status="suspended" spid="60" sbid="0" ecid="0" priority="0" trancount="0" lastbatchstarted="2022-01-30T19:22:30.070" lastbatchcompleted="2022-01-30T19:22:30.067" lastattention="1900-01-01T00:00:00.067" clientapp="slask.pl" hostname="SOMMERWALD" hostpid="9708" loginname="PRESENT10\sommar" isolationlevel="read committed (2)" xactid="4398044" currentdb="9" currentdbname="BigDB" lockTimeout="4294967295" clientoption1="671088672" clientoption2="128056">
+      <executionStack>
+        <frame procname="adhoc" line="1" stmtstart="24" stmtend="140" sqlhandle="0x020000003c4b271a147dcb2d48d42943d16ec6d78395b2bb0000000000000000000000000000000000000000">
+unknown    </frame>
+        <frame procname="unknown" line="1" sqlhandle="0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000">
+unknown    </frame>
+      </executionStack>
+      <inputbuf>
+(@date date)SELECT SUM(Freight) FROM TallOrders WHERE OrderDate = @date   </inputbuf>
+    </process>
+  </process-list>
+  <resource-list>
+    <pagelock fileid="1" pageid="2539485" dbid="9" subresource="FULL" objectname="BigDB.dbo.TallOrders" id="lock26e8c0f0380" mode="IX" associatedObjectId="72057594049134592">
+      <owner-list>
+        <owner id="process26ea23a5468" mode="IX" />
+      </owner-list>
+      <waiter-list>
+        <waiter id="process26eabfb6108" mode="S" requestType="wait" />
+      </waiter-list>
+    </pagelock>
+    <pagelock fileid="1" pageid="2547120" dbid="9" subresource="FULL" objectname="BigDB.dbo.TallOrders" id="lock27086af3400" mode="S" associatedObjectId="72057594049134592">
+      <owner-list>
+        <owner id="process26ea060f468" mode="S" />
+      </owner-list>
+      <waiter-list>
+        <waiter id="process26ea23a5468" mode="IX" requestType="wait" />
+      </waiter-list>
+    </pagelock>
+    <exchangeEvent id="Port26ead12c300" WaitType="e_waitPortOpen" waiterType="Producer" nodeId="3" tid="3" ownerActivity="notYetOpened" waiterActivity="waitForAllOwnersToOpen">
+      <owner-list>
+        <owner id="process26ea137bc28" />
+      </owner-list>
+      <waiter-list>
+        <waiter id="process26ea060f468" />
+      </waiter-list>
+    </exchangeEvent>
+    <exchangeEvent id="Port26ead12c300" WaitType="e_waitPortOpen" waiterType="Producer" nodeId="3" tid="4" ownerActivity="notYetOpened" waiterActivity="waitForAllOwnersToOpen">
+      <owner-list>
+        <owner id="process26ea137aca8" />
+      </owner-list>
+      <waiter-list>
+        <waiter id="process26ea137bc28" />
+      </waiter-list>
+    </exchangeEvent>
+    <exchangeEvent id="Port26ead12c300" WaitType="e_waitPortOpen" waiterType="Coordinator" nodeId="3" tid="0" ownerActivity="notYetOpened" waiterActivity="waitForAllOwnersToOpen">
+      <owner-list>
+        <owner id="process26eabfb6108" />
+      </owner-list>
+      <waiter-list>
+        <waiter id="process26ea137aca8" />
+      </waiter-list>
+    </exchangeEvent>
+  </resource-list>
+</deadlock>

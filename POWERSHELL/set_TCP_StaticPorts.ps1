@@ -1,0 +1,96 @@
+#Get SQL Server Instance Path:
+$SQLService = "SQL Server (SQL2019)";
+$IpAll_StaticTcpPort = "1433"
+$DAC_StaticTcpPort = "1434"
+
+
+function Test-RegistryValue {
+    param (
+    
+            [parameter(Mandatory=$true)]
+            [ValidateNotNullOrEmpty()]$Path,
+    
+            [parameter(Mandatory=$true)]
+            [ValidateNotNullOrEmpty()]$Value
+    )
+    
+    try {
+            Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Value -ErrorAction Stop | Out-Null
+            return $true
+        }
+    catch {return $false}
+}
+
+$SQLInstancePath = "";
+
+$SQLServiceName = ((Get-Service | WHERE { $_.DisplayName -eq $SQLService }).Name).Trim();
+If ($SQLServiceName.contains("`$")) { $SQLServiceName = $SQLServiceName.SubString($SQLServiceName.IndexOf("`$")+1,$SQLServiceName.Length-$SQLServiceName.IndexOf("`$")-1) }
+foreach ($i in (get-itemproperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server").InstalledInstances)
+{
+  If ( ((Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$i).contains($SQLServiceName) )
+  { $SQLInstancePath = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\"+`
+  (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names\SQL").$i}
+}
+# $SQLInstancePath
+
+
+##################################################################################################################################################
+# IPAll Section:
+##################################################################################################################################################
+
+$SQLTcpPath = "$SQLInstancePath\MSSQLServer\SuperSocketNetLib\Tcp"
+Write-Host 'Entries in Path: '$SQLTcpPath " (before applying changes):"
+
+Get-ChildItem $SQLTcpPath | ForEach-Object {Get-ItemProperty $_.pspath} `
+| Format-Table -Autosize -Property @{N='IPProtocol';E={$_.PSChildName}}, Enabled, Active, TcpPort, TcpDynamicPorts, IpAddress
+
+
+Set-ItemProperty -Path "$SQLTcpPath" -Name "Enabled" -Value "1"
+Set-ItemProperty -Path "$SQLTcpPath" -Name "ListenOnAllIPs" -Value "1"
+
+# TcpDynamicPorts has to be set to empty string if you want IPAll to listen remotely on static $IpAll_StaticTcpPort:
+Set-ItemProperty -Path "$SQLTcpPath\IPALL" -Name "TcpDynamicPorts" -Value ""
+Set-ItemProperty -Path "$SQLTcpPath\IPALL" -Name "TcpPort" -Value $IpAll_StaticTcpPort
+
+If (Test-RegistryValue -Path "$SQLTcpPath\IPALL" -Value "IPV6Supported") {
+    Write-Host "Setting the IPV6Supported to 0: "
+    Set-ItemProperty -Path "$SQLTcpPath\IPALL" -Name "IPV6Supported" -Value 0
+}
+Else {
+    Write-Host "Creating and Setting the IPV6Supported to 0: "
+    New-ItemProperty -Path "$SQLTcpPath\IPALL" -Name "IPV6Supported" -Value 0 -PropertyType DWord
+}
+
+Write-Host 'Entries in Path: '$SQLTcpPath " (after applying changes, if any):"
+
+Get-ChildItem $SQLTcpPath | ForEach-Object {Get-ItemProperty $_.pspath} `
+| Format-Table -Autosize -Property @{N='IPProtocol';E={$_.PSChildName}}, Enabled, Active, TcpPort, TcpDynamicPorts, IpAddress
+
+
+##################################################################################################################################################
+# DAC Section:
+##################################################################################################################################################
+
+$DACPath = "$SQLInstancePath\MSSQLServer\SuperSocketNetLib\AdminConnection\Tcp"
+Write-Host 'Entries in DAC Path: '$DACPath " (before applying changes):"
+Get-ItemProperty -Path $DACPath
+
+Set-ItemProperty -Path "$DACPath" -Name "Enabled" -Value "1"
+Set-ItemProperty -Path "$DACPath" -Name "ListenOnAllIPs" -Value "1"
+
+# Both TcpDynamicPorts and TcpPort have to be set to the same value if you want DAC to listen remotely on that static TcpPort:
+Set-ItemProperty -Path "$DACPath" -Name "TcpDynamicPorts" -Value $DAC_StaticTcpPort 
+Set-ItemProperty -Path "$DACPath" -Name "TcpPort" -Value $DAC_StaticTcpPort
+
+
+If (Test-RegistryValue -Path "$DACPath" -Value "IPV6Supported") {
+    Write-Host "Setting the DAC IPV6Supported to 0: "
+    Set-ItemProperty -Path "$DACPath" -Name "IPV6Supported" -Value 0
+}
+Else {
+    Write-Host "Creating and Setting the DAC IPV6Supported to 0: "
+    New-ItemProperty -Path "$DACPath" -Name "IPV6Supported" -Value 0 -PropertyType DWord
+}
+
+Write-Host 'Entries in DAC Path: '$DACPath " (after applying changes, if any):"
+Get-ItemProperty -Path $DACPath

@@ -1,0 +1,14 @@
+﻿C:\Program Files\MSSQL13.NAMED_INSTANCE_NAME\MSSQL\Binn>sqlservr.exe -m -s NAMED_INSTANCE_NAME
+
+-- in another cmd window:
+C:\Windows\system32>sqlcmd -E -S localhost
+1> CREATE LOGIN [DOMAIN\user_name] FROM WINDOWS
+2> GO
+1> EXEC sys.sp_addsrvrolemember @loginame = N'DOMAIN\user_name', @ROLENAME = N'sysadmin';
+2> GO
+1> quit
+
+C:\Windows\system32>
+
+
+

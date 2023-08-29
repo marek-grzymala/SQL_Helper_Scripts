@@ -1,0 +1,35 @@
+USE [master]
+GO
+
+DROP ENDPOINT [Hadr_endpoint] 
+
+ALTER AVAILABILITY GROUP [Test-AG]
+REMOVE LISTENER N'LISTENER_NAME';
+GO
+
+USE [master]
+GO
+
+ALTER AVAILABILITY GROUP [Test-AG]
+REMOVE DATABASE [AdventureWorks2014];
+GO
+
+
+USE [master]
+GO
+
+ALTER AVAILABILITY GROUP [Test-AG]
+REMOVE REPLICA ON N'SecondaryNode\SQL_INSTANCE_NAME';
+
+GO
+
+
+USE [master]
+GO
+
+DROP AVAILABILITY GROUP [Test-AG];
+GO
+
+
+select * from sys.endpoints
+drop endpoint Hadr_endpoint
