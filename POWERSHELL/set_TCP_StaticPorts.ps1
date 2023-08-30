@@ -1,7 +1,7 @@
-#Get SQL Server Instance Path:
-$SQLService = "SQL Server (SQL2019)";
-$IpAll_StaticTcpPort = "1433"
-$DAC_StaticTcpPort = "1434"
+# Set Static Variable Values:
+$SQLService = "SQL Server (Inst1)"; # Replace <SQL Server (Inst1)> with your SQLService Name as shown in DisplayName by ps command: Get-Service -name *SQL*
+$IpAll_StaticTcpPort = "51433"      # Replace with Static TCP Port Number of your choice for regular TCP Client Connections
+$DAC_StaticTcpPort = "51434"        # Replace with Static TCP Port Number of your choice for Dedicated Admin Connection
 
 
 function Test-RegistryValue {
@@ -21,6 +21,8 @@ function Test-RegistryValue {
     catch {return $false}
 }
 
+
+# Get SQL Server Instance Path:
 $SQLInstancePath = "";
 
 $SQLServiceName = ((Get-Service | WHERE { $_.DisplayName -eq $SQLService }).Name).Trim();

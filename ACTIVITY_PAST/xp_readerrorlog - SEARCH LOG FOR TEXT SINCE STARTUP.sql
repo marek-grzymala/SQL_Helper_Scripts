@@ -1,41 +1,46 @@
 SET NOCOUNT ON
 
-DECLARE @SQL_Start_Date DATETIME, @now DATETIME
-SELECT @SQL_Start_Date = DATEADD(MINUTE, -1, sqlserver_start_time), @now = GETDATE() FROM sys.dm_os_sys_info
+DECLARE @SQL_Start_Date DATETIME
+      , @now            DATETIME
+SELECT @SQL_Start_Date = DATEADD(MINUTE, -1, [sqlserver_start_time]), @now = GETDATE()FROM [sys].[dm_os_sys_info]
 SELECT @SQL_Start_Date AS [SQL Start Date]
 
-DECLARE @maxLog      INT,
-        @searchStr   VARCHAR(256),
-        @startDate   DATETIME;
+DECLARE @maxLog    INT
+      , @searchStr VARCHAR(256)
+      , @startDate DATETIME;
 
-SELECT  @searchStr = 'Procedure', --'BUF', --'Database backed up. Database:'
-        @startDate = DATEADD(HOUR, -12, @now) --@SQL_Start_Date --'2013-10-01 08:00';
+SELECT @searchStr = 'admin'                --'BUF', --'Database backed up. Database:'
+     , @startDate = DATEADD(DAY, -1, @now) --@SQL_Start_Date --'2013-10-01 08:00';
 
-DECLARE @errorLogs   TABLE (
-    LogID    INT,
-    LogDate  DATETIME,
-    LogSize  BIGINT   );
+DECLARE @errorLogs TABLE ([LogID] INT, [LogDate] DATETIME, [LogSize] BIGINT);
 
-DECLARE @logData      TABLE (
-    LogDate     DATETIME,
-    ProcInfo    VARCHAR(64),
-    LogText     VARCHAR(2048)   );
+DECLARE @logData TABLE ([LogId] INT NOT NULL, [LogDate] DATETIME NOT NULL, [ProcInfo] VARCHAR(64), [LogText] VARCHAR(2048));
+DECLARE @logDataTmp TABLE ([LogDate] DATETIME, [ProcInfo] VARCHAR(64), [LogText] VARCHAR(2048));
 
-INSERT INTO @errorLogs EXEC sys.sp_enumerrorlogs;
---SELECT * FROM @errorLogs
-SELECT TOP 1 @maxLog = LogID FROM @errorLogs WHERE [LogDate] <= @startDate ORDER BY [LogDate] DESC;
+INSERT INTO @errorLogs EXEC [sys].[sp_enumerrorlogs];
+--SELECT [LogID], [LogDate], [LogSize] FROM @errorLogs
+
+SELECT TOP 1
+       @maxLog = [LogID]
+FROM @errorLogs
+--WHERE [LogDate] <= @startDate 
+ORDER BY [LogDate];
 
 WHILE @maxLog >= 0
 BEGIN
-    INSERT INTO @logData
-    EXEC sys.sp_readerrorlog @maxLog, 1, @searchStr;
+    DELETE FROM @logDataTmp
+	INSERT INTO @logDataTmp EXEC [sys].[sp_readerrorlog] @maxLog, 1, @searchStr;
+    PRINT(CONCAT('@maxLog: ', @maxLog))
+	IF EXISTS (SELECT 1 FROM @logDataTmp)
+	BEGIN
+		INSERT INTO @logData
+		SELECT @maxLog, [tmp].[LogDate], [tmp].[ProcInfo], [tmp].[LogText]        
+		FROM @logDataTmp AS tmp
+	END
     SET @maxLog = @maxLog - 1;
 END
 
-SELECT [LogDate], [LogText]
-FROM @logData
-WHERE [LogDate] >= @startDate
-ORDER BY [LogDate] DESC;
+SELECT [LogId], [LogDate], [LogText] FROM @logData WHERE [LogDate] >= @startDate ORDER BY [LogDate] DESC;
 
 /*
 -- compare value for Large Pages Allocated above to large_page_allocations_MB below:
