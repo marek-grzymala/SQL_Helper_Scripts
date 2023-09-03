@@ -2,23 +2,25 @@ SET NOCOUNT ON
 
 DECLARE @SQL_Start_Date DATETIME
       , @now            DATETIME
-SELECT @SQL_Start_Date = DATEADD(MINUTE, -1, [sqlserver_start_time]), @now = GETDATE()FROM [sys].[dm_os_sys_info]
-SELECT @SQL_Start_Date AS [SQL Start Date]
+
+SELECT @SQL_Start_Date = DATEADD(MINUTE, -1, [sqlserver_start_time])
+	 , @now = GETDATE()
+FROM [sys].[dm_os_sys_info]
+--SELECT @SQL_Start_Date AS [SQL Start Date]
 
 DECLARE @maxLog    INT
       , @searchStr VARCHAR(256)
       , @startDate DATETIME;
 
-SELECT @searchStr = 'admin'                --'BUF', --'Database backed up. Database:'
-     , @startDate = DATEADD(DAY, -1, @now) --@SQL_Start_Date --'2013-10-01 08:00';
+SELECT @searchStr = 'dedicated'
+     , @startDate = DATEADD(DAY, -1, @now)
 
 DECLARE @errorLogs TABLE ([LogID] INT, [LogDate] DATETIME, [LogSize] BIGINT);
 
 DECLARE @logData TABLE ([LogId] INT NOT NULL, [LogDate] DATETIME NOT NULL, [ProcInfo] VARCHAR(64), [LogText] VARCHAR(2048));
 DECLARE @logDataTmp TABLE ([LogDate] DATETIME, [ProcInfo] VARCHAR(64), [LogText] VARCHAR(2048));
 
-INSERT INTO @errorLogs EXEC [sys].[sp_enumerrorlogs];
---SELECT [LogID], [LogDate], [LogSize] FROM @errorLogs
+INSERT INTO @errorLogs EXEC sys.sp_enumerrorlogs;
 
 SELECT TOP 1
        @maxLog = [LogID]
@@ -29,7 +31,7 @@ ORDER BY [LogDate];
 WHILE @maxLog >= 0
 BEGIN
     DELETE FROM @logDataTmp
-	INSERT INTO @logDataTmp EXEC [sys].[sp_readerrorlog] @maxLog, 1, @searchStr;
+	INSERT INTO @logDataTmp EXEC sys.sp_readerrorlog @maxLog, 1, @searchStr;
     PRINT(CONCAT('@maxLog: ', @maxLog))
 	IF EXISTS (SELECT 1 FROM @logDataTmp)
 	BEGIN
@@ -40,7 +42,9 @@ BEGIN
     SET @maxLog = @maxLog - 1;
 END
 
-SELECT [LogId], [LogDate], [LogText] FROM @logData WHERE [LogDate] >= @startDate ORDER BY [LogDate] DESC;
+SELECT [LogId], [LogText] 
+FROM @logData 
+--WHERE [LogDate] >= @startDate ORDER BY [LogDate] DESC;
 
 /*
 -- compare value for Large Pages Allocated above to large_page_allocations_MB below:

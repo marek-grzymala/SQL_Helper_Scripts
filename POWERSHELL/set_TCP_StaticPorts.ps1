@@ -80,7 +80,10 @@ Get-ItemProperty -Path $DACPath
 Set-ItemProperty -Path "$DACPath" -Name "Enabled" -Value "1"
 Set-ItemProperty -Path "$DACPath" -Name "ListenOnAllIPs" -Value "1"
 
-# Both TcpDynamicPorts and TcpPort have to be set to the same value if you want DAC to listen remotely on that static TcpPort:
+# You can set the static DAC TcpPort but SQL will completely ignore it and will read/overwrite (if needed) just the `TcpDynamicPorts` string value. 
+# The logic being: unlike with regular client connections you can establish only one DAC connection, 
+# and it's better to override DAC's port value at startup if necessary (hence Dynamic having priority) than to leave SQL without DAC whatsoever.
+
 Set-ItemProperty -Path "$DACPath" -Name "TcpDynamicPorts" -Value $DAC_StaticTcpPort 
 Set-ItemProperty -Path "$DACPath" -Name "TcpPort" -Value $DAC_StaticTcpPort
 
