@@ -6,7 +6,7 @@
 SET NOCOUNT ON;
 
 DECLARE @_key                    NVARCHAR(2000) = N'SOFTWARE\Microsoft\MSSQLServer\MSSQLServer\SuperSocketNetLib\AdminConnection\Tcp'
-      , @TcpDynamicPortsExpected INT            = 1434
+      , @TcpDynamicPortsExpected INT            = 51434
       , @TcpDynamicPortsActual   INT;
 
 DECLARE @RegEntries TABLE 
@@ -17,7 +17,7 @@ DECLARE @RegEntries TABLE
 
 INSERT @RegEntries EXEC master..xp_instance_regenumvalues @rootkey = N'HKEY_LOCAL_MACHINE', @key = @_key;
 SELECT @TcpDynamicPortsActual = [RegValue] FROM @RegEntries WHERE [RegEntryName] = 'TcpDynamicPorts'
---SELECT @TcpDynamicPortsActual
+SELECT @TcpDynamicPortsExpected AS [TcpDynamicPortsExpected], @TcpDynamicPortsActual AS [TcpDynamicPortsActual]
 
 IF (@TcpDynamicPortsExpected = CONVERT(INT, @TcpDynamicPortsActual))
 BEGIN
