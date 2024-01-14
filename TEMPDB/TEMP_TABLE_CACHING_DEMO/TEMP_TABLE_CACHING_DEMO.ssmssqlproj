@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<SqlWorkbenchSqlProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="TEMP_TABLE_CACHING_DEMO">
+  <Items>
+    <LogicalFolder Name="Connections" Type="2" Sorted="true">
+      <Items>
+        <ConnectionNode Name="Inst1.docker.internal,1433:sa">
+          <Created>2024-01-13T20:50:20.1856681+01:00</Created>
+          <Type>SQL</Type>
+          <Server>Inst1.docker.internal,1433</Server>
+          <UserName>sa</UserName>
+          <Authentication>SQL</Authentication>
+          <InitialDB>tempdb</InitialDB>
+          <LoginTimeout>30</LoginTimeout>
+          <ExecutionTimeout>0</ExecutionTimeout>
+          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
+          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
+        </ConnectionNode>
+        <ConnectionNode Name="Inst1.docker.internal,1434:sa">
+          <Created>2024-01-14T23:41:59.965658+01:00</Created>
+          <Type>SQL</Type>
+          <Server>Inst1.docker.internal,1434</Server>
+          <UserName>sa</UserName>
+          <Authentication>SQL</Authentication>
+          <InitialDB>master</InitialDB>
+          <LoginTimeout>30</LoginTimeout>
+          <ExecutionTimeout>0</ExecutionTimeout>
+          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
+          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
+        </ConnectionNode>
+      </Items>
+    </LogicalFolder>
+    <LogicalFolder Name="Queries" Type="0" Sorted="true">
+      <Items>
+        <FileNode Name="A1_TempTableCachingDemo_1.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal,1433:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal,1433</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A1_TempTableCachingDemo_1.sql</FullPath>
+        </FileNode>
+        <FileNode Name="A2_TempTableCachingDemo_DropNotPreventingCaching.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal,1433:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal,1433</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A2_TempTableCachingDemo_DropNotPreventingCaching.sql</FullPath>
+        </FileNode>
+        <FileNode Name="A3_TempTableCachingDemo_IndexPreventsCaching.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal,1433:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal,1433</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A3_TempTableCachingDemo_IndexPreventsCaching.sql</FullPath>
+        </FileNode>
+        <FileNode Name="A4_TempTable_CreateAndRenameCachedTemporaryObjects.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal,1433:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal,1433</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A4_TempTable_CreateAndRenameCachedTemporaryObjects.sql</FullPath>
+        </FileNode>
+        <FileNode Name="A6_TempTable_TriggerAutoStatsCreation.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal,1433:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal,1433</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A6_TempTable_TriggerAutoStatsCreation.sql</FullPath>
+        </FileNode>
+        <FileNode Name="SQLQuery1.sql">
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
+          <AssociatedConnUserName />
+          <FullPath>SQLQuery1.sql</FullPath>
+        </FileNode>
+      </Items>
+    </LogicalFolder>
+    <LogicalFolder Name="Miscellaneous" Type="3" Sorted="true">
+      <Items />
+    </LogicalFolder>
+  </Items>
+</SqlWorkbenchSqlProject>

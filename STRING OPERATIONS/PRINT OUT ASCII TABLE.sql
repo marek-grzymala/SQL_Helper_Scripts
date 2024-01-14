@@ -25,15 +25,15 @@ END
 SELECT 
             CharNum
            ,AsciiChar
-           ,[dbo].[fnRegExpressionReplace](AsciiChar, @NonStandardChars, '#')    AS [fnReplaceValue]
-           ,[dbo].[fnRegExpressionReplace](AsciiChar, @AllowedRangeOfChars, '#') AS [fnReplaceValue2]
-           ,[dbo].[fnReplaceInvalidChars](AsciiChar, @AllowedRangeOfChars2)      AS [fnReplaceValue3]
+           --,[dbo].[fnRegExpressionReplace](AsciiChar, @NonStandardChars, '#')    AS [fnReplaceValue]
+           --,[dbo].[fnRegExpressionReplace](AsciiChar, @AllowedRangeOfChars, '#') AS [fnReplaceValue2]
+           --,[dbo].[fnReplaceInvalidChars](AsciiChar, @AllowedRangeOfChars2)      AS [fnReplaceValue3]
 
 FROM        @ASCIITable
 --WHERE       PATINDEX('[^ -~À-ÖØ-öø-ÿ]', [AsciiChar] COLLATE Latin1_General_CI_AS) = 0
 )
 SELECT * FROM cte 
-WHERE ([fnReplaceValue] <> '#' AND [fnReplaceValue2] <> '#') --AND [fnReplaceValue3] = '#'
+--WHERE ([fnReplaceValue] <> '#' AND [fnReplaceValue2] <> '#') --AND [fnReplaceValue3] = '#'
 
 /* Print out random characters: */
 /*

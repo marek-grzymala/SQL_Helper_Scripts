@@ -25,15 +25,26 @@
   TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
   PARTICULAR PURPOSE.
 ============================================================================*/
-
-IF DB_ID('DeadlockDemo') IS NOT NULL DROP DATABASE DeadlockDemo
+USE [master]
 GO
+
+
+IF DB_ID('DeadlockDemo') IS NOT NULL 
+BEGIN
+	ALTER DATABASE DeadlockDemo SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+	DROP DATABASE DeadlockDemo	
+END
+GO
+
 CREATE DATABASE DeadlockDemo
 GO
-USE DeadlockDemo
-GO
+
 SET NOCOUNT ON
 GO
+
+USE [DeadlockDemo]
+GO
+
 IF OBJECT_ID ('BookmarkLookupDeadlock') IS NOT NULL DROP TABLE BookmarkLookupDeadlock
 IF OBJECT_ID ('BookmarkLookupSelect') IS NOT NULL DROP PROC BookmarkLookupSelect
 IF OBJECT_ID ('BookmarkLookupUpdate') IS NOT NULL DROP PROC BookmarkLookupUpdate
@@ -50,12 +61,19 @@ GO
 CREATE CLUSTERED INDEX cidx_BookmarkLookupDeadlock ON BookmarkLookupDeadlock (col1)
 CREATE NONCLUSTERED INDEX idx_BookmarkLookupDeadlock_col2 ON BookmarkLookupDeadlock (col2)
 GO
-CREATE PROC BookmarkLookupSelect @col2 int AS 
+
+CREATE OR ALTER PROC usp_BookmarkLookupSelect 
+@col2 INT 
+--WITH ENCRYPTION
+AS 
 BEGIN
     SELECT col2, col3 FROM BookmarkLookupDeadlock WHERE col2 BETWEEN @col2 AND @col2+1
 END
 GO
-CREATE PROC BookmarkLookupUpdate @col2 int 
+
+CREATE OR ALTER PROC usp_BookmarkLookupUpdate 
+@col2 int 
+--WITH ENCRYPTION
 AS
 BEGIN
     UPDATE BookmarkLookupDeadlock SET col2 = col2+1 WHERE col1 = @col2

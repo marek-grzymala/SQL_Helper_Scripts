@@ -45,10 +45,29 @@ SELECT oc.OBJECT_NAME AS EventName
 							AND occ.column_value = mv.map_key
 						WHERE occ.name = 'KEYWORD'
 							AND occ.object_name = oc.object_name) ca
-	WHERE oc.column_type <> @ReadFlag
-		AND sesea.name = oc.object_name
+	WHERE 1 = 1
+		AND oc.column_type <> @ReadFlag
+		--AND sesea.name = oc.object_name
 		AND oc.object_name = ISNULL(@EventName,oc.object_name)
 		AND sesea.SessionName = ISNULL(@SessionName,sesea.SessionName)
+	AND oc.OBJECT_NAME IN
+	(
+	N'deadlock_scheduler_callback_executed',
+	N'scheduler_monitor_deadlock_ring_buffer_recorded',
+	N'blocked_process_report',
+	N'blocked_process_report_filtered',
+	N'database_xml_deadlock_report',
+	N'deadlock_monitor_mem_stats',
+	N'deadlock_monitor_perf_stats',
+	N'deadlock_monitor_pmo_status',
+	N'deadlock_monitor_serialized_local_wait_for_graph',
+	N'deadlock_monitor_state_transition',
+	N'lock_deadlock',
+	N'lock_deadlock_chain',
+	N'xml_deadlock_report',
+	N'xml_deadlock_report_filtered'
+	)
+
 	ORDER BY sesea.SessionName,oc.object_name
 	;
 GO

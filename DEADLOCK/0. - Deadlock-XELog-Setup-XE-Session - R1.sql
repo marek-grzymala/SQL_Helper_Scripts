@@ -1,6 +1,8 @@
 USE [master]
 GO
 
+--DROP EVENT SESSION [DeadlockCapture] ON SERVER 
+
 DECLARE @XeName NVARCHAR(256)
 	  , @XeFilePath NVARCHAR(2000)
       , @XeFileName NVARCHAR(2000)
@@ -11,7 +13,7 @@ DECLARE @XeName NVARCHAR(256)
 
 /* set the variables as desired: */
 SET @XeName = N'DeadlockCapture';
-SET @XeFilePath = N'C:\MSSQL\Backup\';
+SET @XeFilePath = N'C:\MSSQL\Backup\XEL\';
 SET @XeFileName = N'DeadlockCapture.xel';
 SET @MaxFileSizeMb = '16'; /* the larger the .xel file the longer it takes to import its contents into SQL tables */
 SET @MaxRolloverFiles = '5';

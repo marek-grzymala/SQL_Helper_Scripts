@@ -1,6 +1,9 @@
-SET NOCOUNT ON
+USE [DeadlockDemo]
 GO
 
+
+SET NOCOUNT ON
+GO
 
 DROP TABLE IF EXISTS [dbo].[DeadlockFact];
 GO
@@ -37,8 +40,7 @@ DROP TABLE IF EXISTS [#DeadlockMerge]
 
 CREATE TABLE [#DeadlockMerge] (
 	 [event_name]                            NVARCHAR(MAX) NULL
-	,[timestamp]                             DATETIMEOFFSET NOT NULL
-	,[timestamp (UTC)]                       DATETIMEOFFSET NOT NULL
+	,[deadlock_timestamp]                    DATETIMEOFFSET NOT NULL
 	,[resource_type]                         NVARCHAR(MAX) NULL
 	,[mode]                                  NVARCHAR(MAX) NULL
 	,[owner_type]                            NVARCHAR(MAX) NULL
@@ -86,9 +88,9 @@ SET @ErrorStateDefault = 1;
 DECLARE [timestamps_cursor] CURSOR FOR
         
         SELECT DISTINCT
-			   [timestamp]
+			   [deadlock_timestamp]
         FROM   [dbo].[DeadlockStaging]
-		ORDER BY [timestamp]
+		ORDER BY [deadlock_timestamp]
         
 OPEN [timestamps_cursor]   
 FETCH NEXT FROM [timestamps_cursor] INTO @timestamp
@@ -100,8 +102,7 @@ BEGIN
         INSERT INTO [#DeadlockMerge] 
             (
                 [event_name]                       
-               ,[timestamp]                  
-               ,[timestamp (UTC)]            
+               ,[deadlock_timestamp]          
                ,[resource_type]              
                ,[mode]                       
                ,[owner_type]                 
@@ -131,8 +132,7 @@ BEGIN
 
         SELECT 
              [event_name]                       
-            ,[timestamp]                  
-            ,[timestamp (UTC)]            
+            ,[deadlock_timestamp]           
             ,[resource_type]              
             ,[mode]                       
             ,[owner_type]                 
@@ -161,7 +161,7 @@ BEGIN
             
         FROM [dbo].[DeadlockStaging] 
         --WHERE CONVERT(DATETIME2(0), [timestamp]) = @timestamp
-		WHERE [timestamp] = @timestamp
+		WHERE [deadlock_timestamp] = @timestamp
         SELECT @rowcount = @@ROWCOUNT
 
         PRINT(CONCAT(@timestamp, ' ', @counter, ' Rowcount: ', @rowcount))
@@ -312,11 +312,14 @@ CLOSE [timestamps_cursor]
 DEALLOCATE [timestamps_cursor]
 ----------------------------------
 
-SELECT * 
-FROM [dbo].[DeadlockStaging] 
-WHERE [timestamp] = '2019-11-14 10:40:22.5566667 +00:00'
+--SELECT * 
+--FROM [dbo].[DeadlockStaging] 
+--WHERE [timestamp] = '2019-11-14 10:40:22.5566667 +00:00'
 
-SELECT * FROM [dbo].[DeadlockFact] WHERE [DeadlockTime] = '2019-09-05 07:28:49.733'   --'2019-11-14 10:40:22.556'
+SELECT * FROM [dbo].[DeadlockFact]
+WHERE COALESCE([DeadlockObject], '0') NOT LIKE '%redgate%'
+ORDER BY [DeadlockTime] DESC
+--WHERE [DeadlockTime] = '2019-09-05 07:28:49.733'   --'2019-11-14 10:40:22.556'
 --WHERE [Procedure] = 'mssqlsystemresource.sys.sp_cci_tuple_mover'
 --WHERE DeadlockID IN
 --(
@@ -326,7 +329,6 @@ SELECT * FROM [dbo].[DeadlockFact] WHERE [DeadlockTime] = '2019-09-05 07:28:49.7
 --32688191,
 --32688214
 --)
---ORDER BY ProcessID DESC
 
 /*
 SELECT   [deadlock_id]

@@ -1,4 +1,4 @@
-USE [DBAdmin]
+USE [DeadlockDemo]
 GO
 
 SET NOCOUNT ON;
@@ -12,10 +12,10 @@ SET		@ErrorSeverityDefault = 20;
 SET		@ErrorStateDefault	  = 1;
 
 /* set the variables: */
-SET @XeName = N'DeadlockCapture';
+SET @XeName = N'deadlock_capture';
 
 /* to specify just one xel file replace the file name below (if null the default filename pattern for that session will be used): */
-SET @XeFilePath = N'C:\MSSQL\Backup\DeadlockCapture*.xel';
+SET @XeFilePath = N'C:\MSSQL\Backup\XEL\system_health_0_*.xel';
 
 IF (@XeFilePath IS NULL)
 BEGIN
@@ -127,6 +127,7 @@ SELECT
                 ELSE 'unknown entry type or not a deadlock XE session data'
             END AS [EventName]
 FROM      sys.fn_xe_file_target_read_file(@XeFilePath, 'Not used in 2012+', NULL, NULL)
+WHERE	  object_name IN ('lock_deadlock_chain', 'xml_deadlock_report', 'database_xml_deadlock_report', 'lock_deadlock')
 
 DECLARE @CurrentRn INT = (SELECT MIN(Rn) FROM [#RawData] WHERE [Processed] = 0)
 DECLARE @MaxRn INT = (SELECT MAX(Rn) FROM [#RawData])
@@ -186,7 +187,7 @@ BEGIN
 	SELECT @resource_0             = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'resource_0'
 	SELECT @resource_1             = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'resource_1'
 	SELECT @resource_2             = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'resource_2'
-	SELECT @xml_report_id            = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'deadlock_id'
+	SELECT @xml_report_id          = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'deadlock_id'
 	SELECT @object_id              = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'object_id'
 	SELECT @associated_object_id   = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'associated_object_id'
 	SELECT @session_id             = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'session_id'
@@ -194,7 +195,7 @@ BEGIN
 	SELECT @resource_description   = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'resource_description'	
 	SELECT @username               = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/action') p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'username'
 	SELECT @nt_username            = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/action') p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'nt_username'
-	SELECT @xml_report_cycle_id      = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'deadlock_cycle_id'
+	SELECT @xml_report_cycle_id    = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'deadlock_cycle_id'
 	SELECT @duration               = k.value('data(.)','VARCHAR(1024)')  FROM @XmlData.nodes('/event/data')   p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'duration'
 	SELECT @sql_text               = k.value('data(.)', 'VARCHAR(1000)') FROM @XmlData.nodes('/event/action') p(k) WHERE (k.value('@name','VARCHAR(1024)')) = 'sql_text'
 	----------------------------------------------------------------------------------

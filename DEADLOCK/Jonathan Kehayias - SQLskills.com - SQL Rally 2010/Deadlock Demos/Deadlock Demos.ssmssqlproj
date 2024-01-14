@@ -20,9 +20,9 @@
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
         <FileNode Name="1 - Bookmark Lookup Setup.sql">
-          <AssociatedConnectionMoniker />
-          <AssociatedConnSrvName />
-          <AssociatedConnUserName />
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal,1433:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal,1433</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
           <FullPath>1 - Bookmark Lookup Setup.sql</FullPath>
         </FileNode>
         <FileNode Name="2 - Setup Deadlock Captures.sql">

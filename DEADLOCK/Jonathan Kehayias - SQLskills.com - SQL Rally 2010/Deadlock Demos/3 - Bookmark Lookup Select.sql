@@ -28,18 +28,19 @@
   PARTICULAR PURPOSE.
 ============================================================================*/
 
-USE DeadlockDemo
+USE [DeadlockDemo]
 GO
+
 SET NOCOUNT ON
 IF OBJECT_ID('tempdb..#t1') IS NOT NULL
 BEGIN 
 	DROP TABLE #t1
 END
-CREATE TABLE #t1 (col2 int, col3 int)
+CREATE TABLE #t1 (col2 INT, col3 INT)
 GO
 WHILE (1=1) 
 BEGIN
-    INSERT INTO #t1 EXEC BookmarkLookupSelect 4
+    INSERT INTO #t1 EXEC usp_BookmarkLookupSelect 4
     TRUNCATE TABLE #t1
 END
 GO
