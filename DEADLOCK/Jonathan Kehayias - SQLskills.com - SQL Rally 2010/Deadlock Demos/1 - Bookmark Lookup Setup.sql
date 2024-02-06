@@ -58,6 +58,7 @@ WHILE (@int <= 1000) BEGIN
     SET @int = @int + 1
 END
 GO
+
 CREATE CLUSTERED INDEX cidx_BookmarkLookupDeadlock ON BookmarkLookupDeadlock (col1)
 CREATE NONCLUSTERED INDEX idx_BookmarkLookupDeadlock_col2 ON BookmarkLookupDeadlock (col2)
 GO

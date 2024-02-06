@@ -14,7 +14,7 @@ SELECT * FROM Production.Product AS p WHERE ProductNumber LIKE 'H%'
 -- run up to here, then switch back to window 1 and run the second half
 
 INSERT INTO Production.Product (Name, ProductNumber, SafetyStockLevel, ReorderPoint, StandardCost, ListPrice, DaysToManufacture, SellStartDate, SellEndDate)
-VALUES ('fake', 'HM-0001', 1, 1, 1, 1, 1, GETDATE(), GETDATE());
+VALUES ('fake2', 'HM-0001', 1, 1, 1, 1, 1, GETDATE(), GETDATE());
 
 ROLLBACK TRANSACTION
 

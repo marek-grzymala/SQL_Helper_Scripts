@@ -1,8 +1,7 @@
 USE AdventureWorks2019
 GO
 
-SET LOCK_TIMEOUT 300000
-
+--SET LOCK_TIMEOUT 300000
 
 -- basic key-lookup deadlock window 2
 
