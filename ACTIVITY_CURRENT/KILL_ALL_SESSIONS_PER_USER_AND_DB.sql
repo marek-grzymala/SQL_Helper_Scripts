@@ -4,7 +4,7 @@ for
 -- Query for processes by login and database
 select spid, Loginame
 from master..sysProcesses
-where Loginame='AONNET\A0703134' and dbid=db_id('AON_MI_DWH')
+where Loginame='USERNAME' and dbid=db_id('DBNAME')
 
 
 open mycursor
