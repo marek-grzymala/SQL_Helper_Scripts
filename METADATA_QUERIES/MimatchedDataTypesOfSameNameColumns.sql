@@ -1,4 +1,4 @@
---USE [SIRIUS1_DEV_MG]
+--USE [YourDbName]
 --GO
 
 DROP TABLE IF EXISTS [#MismatchDeatils]

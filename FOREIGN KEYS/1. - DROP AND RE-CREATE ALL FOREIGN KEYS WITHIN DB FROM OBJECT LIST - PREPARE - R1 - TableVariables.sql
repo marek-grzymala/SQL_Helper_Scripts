@@ -1,5 +1,3 @@
-  USE [AdventureWorks2019]
-  GO
 
 SET QUOTED_IDENTIFIER ON
 GO
@@ -12,6 +10,7 @@ DECLARE
 		@ListOfSchemaNames         NVARCHAR(4000)
       , @ListOfTableNames          NVARCHAR(4000)
       , @Delimiter                 CHAR(1)
+      , @RunTruncate               BIT
       , @DropAllFKsPerDB           BIT
       , @ObjectId                  INT
       , @SchemaId                  INT
@@ -35,11 +34,12 @@ DECLARE
 /* Set the list of Schemas and Tables you want to truncate; use a list of schemas and tables separated and terminated by the @Delimiter charachter */
 /* Below a sample list of tables and schemas from AdventureWorks2019 - fill in your values as you please */
 
-SET @ListOfSchemaNames = 'Sales;Production;HumanResources;Person;'
-SET @ListOfTableNames  = 'SpecialOfferProduct;Product;Employee;BusinessEntity;Person;'
+SET @ListOfSchemaNames = 'dbo;'
+SET @ListOfTableNames  = 'TableName;'
 SET @Delimiter = ';' /* character used to delimit and terminate the items in the lists above */
 SET @DropAllFKsPerDB = 0 /* Set @DropAllFKsPerDB to = 1 ONLY if you want to ignore the @ListOfSchemaNames/@ListOfTableNames above 
                             and generate drop/re-create commands for ALL FK constraints within the ENTIRE DB */
+SET @RunTruncate = 0
 SET @ErrorSeverity = 16;
 SET @ErrorState = 1;
 
@@ -308,25 +308,28 @@ BEGIN
 	END
 
 	PRINT('---------------------------------------------------- TRUNCATE TABLES: --------------------------------------------------------------------')
+    IF (@RunTruncate = 1) 
+    BEGIN
+	    SELECT @LineId = MIN([Id]), @LineIdMax = MAX([Id]) FROM @SelectedObjectList;
+	    WHILE (@LineId <= @LineIdMax) 
+	    BEGIN
+		    SELECT @TruncateTableCommand = CONCAT('TRUNCATE TABLE [', [SchemaName], '].[', [TableName], '];')
+		    FROM   @SelectedObjectList
+		    WHERE  [Id] = @LineId
 
-	SELECT @LineId = MIN([Id]), @LineIdMax = MAX([Id]) FROM @SelectedObjectList;
-	WHILE (@LineId <= @LineIdMax) 
-	BEGIN
-		SELECT @TruncateTableCommand = CONCAT('TRUNCATE TABLE [', [SchemaName], '].[', [TableName], '];')
-		FROM   @SelectedObjectList
-		WHERE  [Id] = @LineId
+		    EXEC sys.sp_executesql @TruncateTableCommand;
+		    IF (@@ERROR = 0) PRINT (CONCAT('Successfully executed:', @TruncateTableCommand))
+		    ELSE 
+		    BEGIN
+			    ROLLBACK TRANSACTION
+			    SET @ErrorMessage = CONCAT('Rolling back transaction - Error when executing: ', @TruncateTableCommand);
+			    RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState)
+			    BREAK;
+		    END
+		    SELECT @LineId = @LineId + 1;
+	    END    
+    END
 
-		EXEC sys.sp_executesql @TruncateTableCommand;
-		IF (@@ERROR = 0) PRINT (CONCAT('Successfully executed:', @TruncateTableCommand))
-		ELSE 
-		BEGIN
-			ROLLBACK TRANSACTION
-			SET @ErrorMessage = CONCAT('Rolling back transaction - Error when executing: ', @TruncateTableCommand);
-			RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState)
-			BREAK;
-		END
-		SELECT @LineId = @LineId + 1;
-	END
 
 	PRINT('---------------------------------------------------- RECREATE CONSTRAINTS: --------------------------------------------------------------------')
 

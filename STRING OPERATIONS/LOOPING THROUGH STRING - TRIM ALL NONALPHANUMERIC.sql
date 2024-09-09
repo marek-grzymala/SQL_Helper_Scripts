@@ -53,5 +53,3 @@ BEGIN
 END
 SELECT @Output = @RightTrim
 SELECT @Output
-
---SELECT * FROM @Table

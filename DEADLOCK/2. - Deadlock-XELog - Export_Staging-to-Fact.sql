@@ -4,13 +4,13 @@ GO
 
 SET NOCOUNT ON
 GO
-
+/*
 DROP TABLE IF EXISTS [dbo].[DeadlockFact];
 GO
 
 CREATE TABLE [dbo].[DeadlockFact] (    
       [DeadlockID] BIGINT NOT NULL
-	, [DeadlockTime] DATETIME NOT NULL
+	, [DeadlockTimeUTC] DATETIME NOT NULL
     , [TransactionTime] DATETIME NULL
     , [LastBatchStarted] DATETIME NULL
     , [LastBatchCompleted] DATETIME NULL
@@ -19,6 +19,7 @@ CREATE TABLE [dbo].[DeadlockFact] (
     , [KeyLockObject] VARCHAR(200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
     , [KeyLockIndex] VARCHAR(200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
     , [IsVictim] INT NOT NULL
+    , [Spid] INT NOT NULL
     , [ProcessID] VARCHAR(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL
     , [Procedure] VARCHAR(200) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
     , [LockMode] CHAR(5) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
@@ -31,10 +32,11 @@ CREATE TABLE [dbo].[DeadlockFact] (
     , [WaitResource_1] VARCHAR(500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
     , [WaitResource_2] VARCHAR(500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
     , [xml_report] XML NULL
-	, CONSTRAINT [PK_DeadlockFact_DeadlockID_DeadlockTime_ProcessID_IsVictim] PRIMARY KEY CLUSTERED ([DeadlockID] ASC, [DeadlockTime] ASC, [ProcessID] ASC, [IsVictim] ASC)
+	, CONSTRAINT [PK_DeadlockFact_DeadlockID_DeadlockTime_ProcessID] PRIMARY KEY CLUSTERED ([DeadlockID] ASC, [ProcessID] ASC, [Spid] ASC, [IsVictim] ASC)
 )
 GO
-
+*/
+TRUNCATE TABLE [dbo].[DeadlockFact]
 
 DROP TABLE IF EXISTS [#DeadlockMerge]
 
@@ -69,7 +71,7 @@ CREATE TABLE [#DeadlockMerge] (
 ) ON [PRIMARY]
 GO
 
-DECLARE @timestamp            DATETIMEOFFSET
+DECLARE @timestamp            DATETIMEOFFSET      
       , @counter              INT           = 1
       , @deadlock_id          BIGINT
       , @object_id            BIGINT
@@ -88,12 +90,13 @@ SET @ErrorStateDefault = 1;
 DECLARE [timestamps_cursor] CURSOR FOR
         
         SELECT DISTINCT
-			   [deadlock_timestamp]
+			   ROW_NUMBER() OVER (PARTITION BY NULL ORDER BY [deadlock_timestamp]) AS [Rn]
+             , [deadlock_timestamp]
         FROM   [dbo].[DeadlockStaging]
 		ORDER BY [deadlock_timestamp]
         
 OPEN [timestamps_cursor]   
-FETCH NEXT FROM [timestamps_cursor] INTO @timestamp
+FETCH NEXT FROM [timestamps_cursor] INTO @deadlock_id, @timestamp
 WHILE @@FETCH_STATUS = 0   
 BEGIN
 --------------------------------------------------------------------------
@@ -144,7 +147,7 @@ BEGIN
             ,[resource_0]                 
             ,[resource_1]                 
             ,[resource_2]                 
-            ,[deadlock_id]
+            ,COALESCE([deadlock_id], @deadlock_id) AS [deadlock_id]
             ,[object_id]
             ,[associated_object_id]       
             ,[session_id]                 
@@ -199,7 +202,7 @@ BEGIN
 							USING (
 									SELECT
                                                 [DeadlockID] = COALESCE(@deadlock_id, 0),
-									            [DeadlockTime] = COALESCE(Deadlock.Process.value('@lasttranstarted', 'datetime'), Deadlock.Process.value('@lastbatchstarted', 'datetime')),
+									            [DeadlockTimeUTC] = CONVERT(DATETIME, (COALESCE(Deadlock.Process.value('@lasttranstarted', 'datetime'), Deadlock.Process.value('@lastbatchstarted', 'datetime')) AT TIME ZONE 'Pacific Standard Time') AT TIME ZONE 'UTC'),
                                                 [TransactionTime] = Deadlock.Process.value('@lasttranstarted', 'datetime'),
                                                 [LastBatchStarted] = Deadlock.Process.value('@lastbatchstarted', 'datetime'),
                                                 [LastBatchCompleted] = Deadlock.Process.value('@lastbatchcompleted', 'datetime'),
@@ -208,10 +211,11 @@ BEGIN
                                                 [KeyLockObject] = @xml_report.value('/deadlock[1]/resource-list[1]/keylock[1]/@objectname', 'varchar(200)'),
                                                 [KeyLockIndex] = @xml_report.value('/deadlock[1]/resource-list[1]/keylock[1]/@indexname', 'varchar(200)'),
                                                 [IsVictim] = CASE WHEN Deadlock.Process.value('@id', 'varchar(50)') = @xml_report.value('/deadlock[1]/victim-list[1]/victimProcess[1]/@id', 'varchar(50)') THEN 1 ELSE 0 END,
+                                                [Spid] = [Deadlock].[Process].value('@spid', 'INT'),                                                 
                                                 [ProcessID] = Deadlock.Process.value('@id', 'varchar(50)'),
-                                                [Procedure] = Deadlock.Process.value('executionStack[1]/frame[1]/@procname[1]', 'varchar(200)'),
+                                                [Procedure] = [ExecutionStack].[Frame].value('@procname', 'NVARCHAR(255)'),
                                                 [LockMode] = Deadlock.Process.value('@lockMode', 'char(5)'),
-                                                [SqlCode] = Deadlock.Process.value('executionStack[1]/frame[1]', 'varchar(1000)'),
+                                                [SqlCode] = [ExecutionStack].[Frame].value('text()[1]', 'NVARCHAR(MAX)'),
                                                 [HostName] = Deadlock.Process.value('@hostname', 'varchar(20)'),
                                                 [LoginName] = Deadlock.Process.value('@loginname', 'varchar(20)'),
                                                 [InputBuffer] = Deadlock.Process.value('inputbuf[1]', 'varchar(1000)'),
@@ -220,15 +224,18 @@ BEGIN
                                                 [WaitResource_1] = Deadlock.Process.value('/deadlock[1]/process-list[1]/process[1]/@waitresource', 'varchar(500)'),
                                                 [WaitResource_2] = Deadlock.Process.value('/deadlock[1]/process-list[1]/process[2]/@waitresource', 'varchar(500)'),
                                                 [XmReport] = @xml_report
-									FROM        @xml_report.nodes('/deadlock/process-list/process') AS [Deadlock]([Process])) AS [src]
-								            ON (    tgt.[DeadlockID]   = src.[DeadlockID]
-								            	AND tgt.[DeadlockTime] = src.[DeadlockTime]
-								            	AND tgt.[ProcessID]    = src.[ProcessID]
-								            	AND tgt.[IsVictim]     = src.[IsVictim]
-								)
+									FROM        @xml_report.nodes('/deadlock/process-list/process') AS [Deadlock]([Process])
+                                    CROSS APPLY [Process].nodes('executionStack/frame') AS [ExecutionStack]([Frame])
+                                    WHERE [ExecutionStack].[Frame].value('@procname', 'NVARCHAR(255)') <> 'adhoc'
+                                    ) AS [src]
+								            ON (    tgt.[DeadlockID]        = src.[DeadlockID]
+								            	AND tgt.[DeadlockTimeUTC]   = src.[DeadlockTimeUTC]
+								            	AND tgt.[ProcessID]         = src.[ProcessID]
+								            	AND tgt.[IsVictim]          = src.[IsVictim]
+                                                AND tgt.[Spid]              = src.[Spid])
 								WHEN MATCHED THEN
 								UPDATE SET
-						    		   tgt.[DeadlockTime]           = src.[DeadlockTime]
+						    		   tgt.[DeadlockTimeUTC]        = src.[DeadlockTimeUTC]
 						    		 , tgt.[TransactionTime]        = src.[TransactionTime]
 						    		 , tgt.[LastBatchStarted]		= src.[LastBatchStarted]
 						    		 , tgt.[LastBatchCompleted]     = src.[LastBatchCompleted]
@@ -238,7 +245,8 @@ BEGIN
 						    		 , tgt.[KeyLockIndex]			= src.[KeyLockIndex]
 						    	--	 , tgt.[IsVictim]				= src.[IsVictim]
 						    	--	 , tgt.[ProcessID]				= src.[ProcessID]
-						    		 , tgt.[Procedure]				= src.[Procedure]
+						    		 , tgt.[Spid]				    = src.[Spid]
+                                     , tgt.[Procedure]				= src.[Procedure]
 						    		 , tgt.[LockMode]				= src.[LockMode]
 						    		 , tgt.[SqlCode]				= src.[SqlCode]
 						    		 , tgt.[HostName]				= src.[HostName]
@@ -252,7 +260,7 @@ BEGIN
 								WHEN NOT MATCHED THEN
 								INSERT (
 								          [DeadlockID]
-								        , [DeadlockTime]
+								        , [DeadlockTimeUTC]
 								        , [TransactionTime]
 								        , [LastBatchStarted]
 								        , [LastBatchCompleted]
@@ -261,6 +269,7 @@ BEGIN
 								        , [KeyLockObject]
 								        , [KeyLockIndex]
 								        , [IsVictim]
+                                        , [Spid]
 								        , [ProcessID]
 								        , [Procedure]
 								        , [LockMode]
@@ -275,7 +284,7 @@ BEGIN
 								        , [xml_report] )
 								VALUES (
 									      src.[DeadlockID]
-								          , src.[DeadlockTime]
+								          , src.[DeadlockTimeUTC]
 								          , src.[TransactionTime]
 								          , src.[LastBatchStarted]
 								          , src.[LastBatchCompleted]
@@ -284,6 +293,7 @@ BEGIN
 								          , src.[KeyLockObject]
 								          , src.[KeyLockIndex]
 								          , src.[IsVictim]
+                                          , src.[Spid]
 								          , src.[ProcessID]
 								          , src.[Procedure]
 								          , src.[LockMode]
@@ -306,40 +316,38 @@ BEGIN
         END
         SET @counter = @counter + 1
 --------------------------------------------------------------------------
-    FETCH NEXT FROM [timestamps_cursor] INTO @timestamp
+    FETCH NEXT FROM [timestamps_cursor] INTO @deadlock_id, @timestamp
 END   
 CLOSE [timestamps_cursor]   
 DEALLOCATE [timestamps_cursor]
 ----------------------------------
 
---SELECT * 
---FROM [dbo].[DeadlockStaging] 
---WHERE [timestamp] = '2019-11-14 10:40:22.5566667 +00:00'
 
-SELECT * FROM [dbo].[DeadlockFact]
-WHERE COALESCE([DeadlockObject], '0') NOT LIKE '%redgate%'
-ORDER BY [DeadlockTime] DESC
---WHERE [DeadlockTime] = '2019-09-05 07:28:49.733'   --'2019-11-14 10:40:22.556'
---WHERE [Procedure] = 'mssqlsystemresource.sys.sp_cci_tuple_mover'
---WHERE DeadlockID IN
---(
---32688143,
---32688167,
---32688168,
---32688191,
---32688214
---)
+SELECT 
+[DeadlockID]
+, [DeadlockTimeUTC]
+, [TransactionTime]
+--, [LastBatchStarted]
+--, [LastBatchCompleted]
+--, [PagelockObject]
+--, [DeadlockObject]
+--, [KeyLockObject]
+--, [KeyLockIndex]
+, [IsVictim]
+, [Spid]
+, [ProcessID]
+, [xml_report] 
+, [Procedure]
+, [LockMode]
+, [SqlCode]
+--, [HostName]
+--, [LoginName]
+--, [InputBuffer]
+--, [DatabaseName_1]
+--, [DatabaseName_2]
+--, [WaitResource_1]
+--, [WaitResource_2]
+FROM [dbo].[DeadlockFact]
+WHERE [Procedure] LIKE '%sAnalyseAuditData%'
+ORDER BY [DeadlockID], [DeadlockTimeUTC] DESC
 
-/*
-SELECT   [deadlock_id]
-       , [transaction_id]
-       , [associated_object_id]
-       , [session_id]
-FROM     [dbo].[DeadlockStaging]
-WHERE	 [timestamp] = '2019-11-14 10:40:22.5566667 +00:00'
-AND		 [associated_object_id] = 72057594043301888 --( 72057594040745984 ) --
-AND		 [transaction_id] = 35147106466
-AND		 [session_id] = 185
-ORDER BY [transaction_id]
-       , [deadlock_id];
-*/

@@ -1,27 +1,33 @@
-declare mycursor cursor
-for
+DECLARE [mycursor] CURSOR FOR
 
 -- Query for processes by login and database
-select spid, Loginame
-from master..sysProcesses
-where Loginame='AONNET\A0703134' and dbid=db_id('AON_MI_DWH')
+SELECT [spid], [loginame] FROM [master]..[sysprocesses] 
+WHERE 
+--[loginame] = 'USERNAME' AND 
+[dbid] = DB_ID('DBNAME');
 
 
-open mycursor
+OPEN [mycursor];
 
-declare @spid int, @loginame varchar(255), @cmd varchar(255)
+DECLARE @spid     INT
+      , @loginame VARCHAR(255)
+      , @cmd      VARCHAR(255);
 
 -- Loop through the cursor, killing each process
-Fetch NEXT FROM MYCursor INTO @spid, @loginame
-While (@@FETCH_STATUS <> -1)
-begin
-    -- I don't really know why this is necasary, but it is.
-    select @cmd = 'kill ' + cast(@spid as varchar(5))
-    exec(@cmd)
+FETCH NEXT FROM [mycursor]
+INTO @spid
+   , @loginame;
+WHILE (@@FETCH_STATUS <> -1)
+BEGIN
+    SELECT @cmd = 'kill ' + CAST(@spid AS VARCHAR(5));
+    EXEC (@cmd);
+    PRINT CONCAT('Executed: ', @cmd)
 
-    Fetch NEXT FROM MYCursor INTO @spid, @loginame
-end
+    FETCH NEXT FROM [mycursor]
+    INTO @spid
+       , @loginame;
+END;
 
-close mycursor
-deallocate mycursor
-go
+CLOSE [mycursor];
+DEALLOCATE [mycursor];
+GO

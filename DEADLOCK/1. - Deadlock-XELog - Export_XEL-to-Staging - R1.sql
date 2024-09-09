@@ -15,7 +15,7 @@ SET		@ErrorStateDefault	  = 1;
 SET @XeName = N'deadlock_capture';
 
 /* to specify just one xel file replace the file name below (if null the default filename pattern for that session will be used): */
-SET @XeFilePath = N'C:\MSSQL\Backup\XEL\system_health_0_*.xel';
+SET @XeFilePath = N'C:\MSSQL\Backup\XEL\sAnalyseAudit\system_health_0_*.xel';
 
 IF (@XeFilePath IS NULL)
 BEGIN
