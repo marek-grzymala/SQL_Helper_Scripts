@@ -61,7 +61,7 @@ SELECT
 FROM #sqlperf_logspace l
 INNER JOIN #master_sysaltfiles m
 ON l.dbname = m.dbname
-WHERE l.dbname = N'YourDbName' --m.RECOVERY_MODEL = 'FULL'
+--WHERE l.dbname = N'YourDbName' --m.RECOVERY_MODEL = 'FULL'
 ORDER BY l.dbname, l.logSizeMB DESC; --l.logSpaceUsedPct
 
 DROP TABLE #sqlperf_logspace;

@@ -1,10 +1,12 @@
 DECLARE 
         @input NVARCHAR(MAX), 
-        @LineSeparator CHAR(1) = ',',
+        @LineSeparator CHAR(1) = ':',
         @i INT,
         @j INT
 
-SET @input = 'Test 1,test 2, Test 3, test 123'
+SET @input = 'PAGE: 7:1:688256 '
+SELECT [value] AS [SubstringsSeparatedIntoRows] FROM STRING_SPLIT(@input, @LineSeparator)
+
 DECLARE @OutputTable TABLE ([Id] INT IDENTITY(1,1), [LineOfText] NVARCHAR(MAX) NOT NULL)
 
 SET @i = 1
@@ -41,3 +43,10 @@ BEGIN
 	 END
 END
 SELECT * FROM @OutputTable AS [t]
+SELECT RIGHT(@input, CHARINDEX(@LineSeparator, REVERSE(@input))-1) AS [LastStringFromTheInput]
+
+DECLARE @FlattenedText NVARCHAR(MAX);
+SELECT @FlattenedText = STRING_AGG(LineOfText, @LineSeparator)
+FROM @OutputTable;
+SELECT @FlattenedText AS [OriginalFlattenedText];
+
