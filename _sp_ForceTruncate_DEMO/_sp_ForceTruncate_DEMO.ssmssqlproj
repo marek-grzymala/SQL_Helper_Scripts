@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<SqlWorkbenchSqlProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="_sp_ForceTruncate_DEMO">
+  <Items>
+    <LogicalFolder Name="Connections" Type="2" Sorted="true">
+      <Items>
+        <ConnectionNode Name="Inst1.docker.internal:sa">
+          <Created>2024-12-11T16:00:15.0296491+01:00</Created>
+          <Type>SQL</Type>
+          <Server>Inst1.docker.internal</Server>
+          <UserName>sa</UserName>
+          <Authentication>SQL</Authentication>
+          <InitialDB />
+          <LoginTimeout>30</LoginTimeout>
+          <ExecutionTimeout>0</ExecutionTimeout>
+          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
+          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
+        </ConnectionNode>
+      </Items>
+    </LogicalFolder>
+    <LogicalFolder Name="Queries" Type="0" Sorted="true">
+      <Items>
+        <FileNode Name="A0_TABLE_SETUP.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A0_TABLE_SETUP.sql</FullPath>
+        </FileNode>
+        <FileNode Name="A1_sp_spaceused.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A1_sp_spaceused.sql</FullPath>
+        </FileNode>
+        <FileNode Name="A2_DBCC_PAGE.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A2_DBCC_PAGE.sql</FullPath>
+        </FileNode>
+        <FileNode Name="A3_DBCC_PAGE_GAM.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A3_DBCC_PAGE_GAM.sql</FullPath>
+        </FileNode>
+        <FileNode Name="A4_fn_dblog.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:Inst1.docker.internal:False:sa</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>Inst1.docker.internal</AssociatedConnSrvName>
+          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <FullPath>A4_fn_dblog.sql</FullPath>
+        </FileNode>
+      </Items>
+    </LogicalFolder>
+    <LogicalFolder Name="Miscellaneous" Type="3" Sorted="true">
+      <Items />
+    </LogicalFolder>
+  </Items>
+</SqlWorkbenchSqlProject>
