@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/POWERSHELL/Enter-PSSession_REMOTE_PS_TO_NOTEBOOK.ps1

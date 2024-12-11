@@ -8,9 +8,9 @@ DECLARE @AllowedRangeOfChars NVARCHAR(256);
 DECLARE @AllowedRangeOfChars2 NVARCHAR(256);
 SET @CNT = 32
 
-SET @NonStandardChars = N'[^ -~À-ÖØ-öø-ÿ]';
-SET @AllowedRangeOfChars = CONCAT(N'[^', ' -~', 'À-Ö', 'Ø-ö', 'ø-ÿ', ']');
-SET @AllowedRangeOfChars2 = CONCAT(N'%[^', 'a-zA-Z0-9<->', ' -~À-ÖØ-öø-ÿ', CHAR(39), CHAR(43), CHAR(45), ']%');
+SET @NonStandardChars = N'[^ -~ï¿½-ï¿½ï¿½-ï¿½ï¿½-ï¿½]';
+SET @AllowedRangeOfChars = CONCAT(N'[^', ' -~', 'ï¿½-ï¿½', 'ï¿½-ï¿½', 'ï¿½-ï¿½', ']');
+SET @AllowedRangeOfChars2 = CONCAT(N'%[^', 'a-zA-Z0-9<->', ' -~ï¿½-ï¿½ï¿½-ï¿½ï¿½-ï¿½', CHAR(39), CHAR(43), CHAR(45), ']%');
 
 
 WHILE @CNT <= 255 --125
@@ -30,7 +30,7 @@ SELECT
            --,[dbo].[fnReplaceInvalidChars](AsciiChar, @AllowedRangeOfChars2)      AS [fnReplaceValue3]
 
 FROM        @ASCIITable
---WHERE       PATINDEX('[^ -~À-ÖØ-öø-ÿ]', [AsciiChar] COLLATE Latin1_General_CI_AS) = 0
+--WHERE       PATINDEX('[^ -~ï¿½-ï¿½ï¿½-ï¿½ï¿½-ï¿½]', [AsciiChar] COLLATE Latin1_General_CI_AS) = 0
 )
 SELECT * FROM cte 
 --WHERE ([fnReplaceValue] <> '#' AND [fnReplaceValue2] <> '#') --AND [fnReplaceValue3] = '#'

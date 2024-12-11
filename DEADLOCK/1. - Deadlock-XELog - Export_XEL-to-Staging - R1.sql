@@ -89,7 +89,7 @@ DECLARE
 , @resource_0	                BIGINT	 
 , @resource_1	                BIGINT	 
 , @resource_2	                BIGINT	 
-, @xml_report_id	                BIGINT	 
+, @xml_report_id	            BIGINT	 
 , @object_id	                INT	 
 , @associated_object_id	        DECIMAL(20)
 , @session_id	                INT	 
@@ -233,8 +233,8 @@ BEGIN
 	        )
 	            SELECT 
 	                      [event_name]                = @event_name
-	                    , [deadlock_timestamp]				  = @timestamp
-						, [deadlock_timestamp_UTC]           = @timestamp_UTC
+	                    , [deadlock_timestamp]		  = @timestamp
+						, [deadlock_timestamp_UTC]    = @timestamp_UTC
 						, [rn_per_timestamp]		  = @rn_per_timestamp
 	                    , [resource_type]             = @resource_type
 	                    , [mode]                      = @mode
@@ -273,7 +273,7 @@ BEGIN
             SELECT @resource_0              = NULL
             SELECT @resource_1              = NULL
             SELECT @resource_2              = NULL
-            SELECT @xml_report_id             = NULL
+            SELECT @xml_report_id           = NULL
             SELECT @object_id               = NULL
             SELECT @associated_object_id    = NULL
             SELECT @session_id              = NULL
@@ -283,7 +283,7 @@ BEGIN
             SELECT @username                = NULL
             SELECT @nt_username             = NULL
             SELECT @xml_report              = NULL
-            SELECT @xml_report_cycle_id       = NULL
+            SELECT @xml_report_cycle_id     = NULL
             SELECT @server_name             = NULL
             SELECT @duration                = NULL
             SELECT @sql_text                = NULL

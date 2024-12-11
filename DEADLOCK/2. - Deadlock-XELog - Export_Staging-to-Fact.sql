@@ -36,7 +36,8 @@ CREATE TABLE [dbo].[DeadlockFact] (
     , [WaitResource_1] VARCHAR(500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
     , [WaitResource_2] VARCHAR(500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
     , [xml_report] XML NULL
-	, CONSTRAINT [PK_DeadlockFact_DeadlockID_DeadlockTime_ProcessID] PRIMARY KEY CLUSTERED ([DeadlockID] ASC, [ProcessID] ASC, [Spid] ASC, [IsVictim] ASC)
+	, CONSTRAINT [PK_DeadlockFact_DeadlockID_DeadlockTime_ProcessID] 
+    PRIMARY KEY CLUSTERED ([DeadlockID] ASC, [ProcessID] ASC, [Spid] ASC, [IsVictim] ASC)
 )
 GO
 */
@@ -94,9 +95,10 @@ SET @ErrorStateDefault = 1;
 DECLARE [timestamps_cursor] CURSOR FOR
         
         SELECT DISTINCT
-			   ROW_NUMBER() OVER (PARTITION BY NULL ORDER BY [deadlock_timestamp]) AS [Rn]
+			   ROW_NUMBER() OVER (PARTITION BY NULL ORDER BY [deadlock_timestamp]) AS [deadlock_id]
              , [deadlock_timestamp]
         FROM   [dbo].[DeadlockStaging]
+        WHERE  [xml_report] IS NOT NULL
 		ORDER BY [deadlock_timestamp]
         
 OPEN [timestamps_cursor]   
@@ -166,9 +168,9 @@ BEGIN
             ,[deadlock_cycle_id]   
             ,[server_name]         
             
-        FROM [dbo].[DeadlockStaging] 
-        --WHERE CONVERT(DATETIME2(0), [timestamp]) = @timestamp
+        FROM [dbo].[DeadlockStaging]         
 		WHERE [deadlock_timestamp] = @timestamp
+        AND   [xml_report] IS NOT NULL;
         SELECT @rowcount = @@ROWCOUNT
 
         --PRINT(CONCAT(@timestamp, ' ', @counter, ' Rowcount: ', @rowcount))
@@ -354,7 +356,6 @@ CLOSE [timestamps_cursor]
 DEALLOCATE [timestamps_cursor]
 ----------------------------------
 
-
 SELECT 
   [f].[DeadlockID]
 , [f].[DeadlockTimeUTC]
@@ -368,10 +369,20 @@ SELECT
 , [f].[IsVictim]
 , [f].[Spid]
 , [f].[ProcessID]
+, [f].[EcId]
 , [f].[WaitResource]
 , [f].[Procedure]
 , [f].[LockMode]
 , [f].[SqlCode]
 , [f].[xml_report] 
-
 FROM [dbo].[DeadlockFact] [f]
+--WHERE [f].[DeadlockID] IN (4, 5, 6)
+--[f].[ProcessID] = 'process19fc8eab468' AND [f].[IsVictim] = 1 AND [f].[Spid] = 72
+ORDER BY 
+  [f].[DeadlockID]
+, [f].[DeadlockTimeUTC]
+, [f].[Spid]
+, [f].[EcId]
+
+
+

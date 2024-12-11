@@ -3,29 +3,40 @@ DECLARE @Input              NVARCHAR(MAX)
       , @LeftTrim           NVARCHAR(MAX)
       , @RightTrim          NVARCHAR(MAX)
       , @i                  BIGINT
+      , @LineSeparator      CHAR(1) = CHAR(13)
       , @FirstAlphaNumFound BIT = 0
 
 SET @Input = N'
 
-§
+ï¿½
 
 Test 1 
 test 2
 test 3
 test 4
 
-§
+ï¿½
 
 '
+SET @i = 1
+WHILE @i <= LEN(@Input)
+BEGIN
+    IF (SUBSTRING(@Input, @i, 1) = @LineSeparator)
+    BEGIN
+        PRINT(CONCAT('Found NewLine at: ', @i))
+        SET @Input = STUFF(@Input, @i, 1, ',')
+    END
+    SET @i = @i + 1
+END
+
 SET @i = 1
 SET @FirstAlphaNumFound = 0
 WHILE @i <= LEN(@Input)
 BEGIN
-
     IF  (SUBSTRING(@Input, @i, 1)COLLATE Latin1_General_CI_AI NOT LIKE '%[a-z0-9]%')
     AND @FirstAlphaNumFound = 0
     BEGIN
-        SET @FirstAlphaNumFound = 0 /* do nothing, no printable chrachters so far */
+        SET @FirstAlphaNumFound = 0 /* do nothing, no printable characters so far */
     END
     ELSE
     BEGIN
@@ -53,3 +64,4 @@ BEGIN
 END
 SELECT @Output = @RightTrim
 SELECT @Output
+PRINT(@Output)
